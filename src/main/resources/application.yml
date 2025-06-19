@@ -1,0 +1,35 @@
+server:
+  port: 8083
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: amscodelist
+              uri: http://localhost:9011/
+              Predicates:
+                - Path=/codelist/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: circuitBreakerCall
+                    fallbackUri: forward:/fallback
+            - id: amsuser
+              uri: http://localhost:9012/
+              Predicates:
+                - Path=/user/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: circuitBreakerCall
+                    fallbackUri: forward:/fallback
+resilience4j.circuitbreaker:
+  instances:
+    circuitBreakerCall:
+      registerHealthIndicator: true
+      slidingWindowSize: 10
+      failureRateThreshold: 50
+      waitDurationInOpenState: 10s
+      permittedNumberOfCallsInHalfOpenState: 3
+      minimumNumberOfCalls: 5
