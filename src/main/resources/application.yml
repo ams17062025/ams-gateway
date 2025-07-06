@@ -6,24 +6,40 @@ spring:
       server:
         webflux:
           routes:
-            - id: amscodelist
-              uri: http://localhost:9011/
-              Predicates:
+            - id: ams-codelist-service
+              uri: lb://AMS-CODELIST
+              predicates:
                 - Path=/codelist/**
               filters:
+                - StripPrefix: 1
                 - name: CircuitBreaker
                   args:
                     name: circuitBreakerCall
                     fallbackUri: forward:/fallback
-            - id: amsuser
-              uri: http://localhost:9012/
-              Predicates:
+            - id: ams-user-service
+              uri: lb://AMS-USER
+              predicates:
                 - Path=/user/**
               filters:
+                - StripPrefix: 1
                 - name: CircuitBreaker
                   args:
                     name: circuitBreakerCall
                     fallbackUri: forward:/fallback
+          discovery:
+            locator:
+              lower-case-service-id: true
+              enabled: true
+    globalcors:
+      corsConfigurations:
+        '[/**]':
+          allowedOrigins: "http://localhost:3000"
+          allowedMethods:
+            - GET
+            - POST
+            - DELETE
+            - PUT
+          allowedHeaders: "*"
 resilience4j.circuitbreaker:
   instances:
     circuitBreakerCall:
