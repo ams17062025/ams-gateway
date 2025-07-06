@@ -7,7 +7,7 @@ spring:
         webflux:
           routes:
             - id: ams-codelist-service
-              uri: lb://AMS-CODELIST
+              uri: lb://ams-codelist
               predicates:
                 - Path=/codelist/**
               filters:
@@ -17,7 +17,7 @@ spring:
                     name: circuitBreakerCall
                     fallbackUri: forward:/fallback
             - id: ams-user-service
-              uri: lb://AMS-USER
+              uri: lb://ams-users
               predicates:
                 - Path=/user/**
               filters:
@@ -49,3 +49,7 @@ resilience4j.circuitbreaker:
       waitDurationInOpenState: 10s
       permittedNumberOfCallsInHalfOpenState: 3
       minimumNumberOfCalls: 5
+eureka:
+  instance:
+    hostname: loclhost
+    prefer-ip-address: true
